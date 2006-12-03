@@ -28,7 +28,7 @@ provides:
     file: lib/PAR/Filter/PodStrip.pm
   PAR::Packer: 
     file: lib/PAR/Packer.pm
-    version: 0.969_01
+    version: 0.970
   PAR::StrippedPARL::Base: 
     file: lib/PAR/StrippedPARL/Base.pm
     version: 0.958
@@ -49,4 +49,4 @@ requires:
   PAR: 0.97
   PAR::Dist: 0.21
   perl: 5.6.0
-version: 0.969_01
+version: 0.970

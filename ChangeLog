@@ -1,5 +1,5 @@
 
-[Changes for 0.97 - Nov 28, 2006]
+[Changes for 0.970 - Dec  3, 2006]
 * This is the first release of PAR-Packer as a separate distribution.
 * PAR and PAR-Packer (+pp, parl, etc.) have been separated because there
   is usually no reason for the PAR Packager to be present on a user system
@@ -7,8 +7,10 @@
 * PAR-Packer will include all development tools such as those included
   in the contrib/ subdirectory.
 
-[Changes for 0.961 - Nov 23, 2006]
 * Bug fixes, etc.
+    - Moved most code from script/pp to lib/pp.pm so it gets picked up by the
+      CPAN indexer. Hence you will be able to write "install pp" in the CPAN
+      shell to install pp/PAR::Packer.
     - PAR::StrippedPARL::Base->write_parl() failed to work if the @INC
       directories contained spaces in 0.960. (Steven Mackenzie)
     - Much improved documentation of the environment variables

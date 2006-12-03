@@ -14,10 +14,10 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 52e28724ab353e381bb515c490c37dfa477bb4e0 ChangeLog
-SHA1 4c3925d505f0758084b4f69403ac1b755df5d400 MANIFEST
+SHA1 d3d14cb1f73cb881a2a5bf9411e958bc2eb0a966 ChangeLog
+SHA1 0262376e1a9a1c882944530313cf0f3299f78c08 MANIFEST
 SHA1 1b76a18f37473dd21b20f8ae98c8d5a27bbfab03 MANIFEST.SKIP
-SHA1 3a5e8ddad0c989fa32e06a0830a42c3310b6e3cc META.yml
+SHA1 63bec2b2218b42b7b13d79f85edb969bc2927fe4 META.yml
 SHA1 bff0a4a4af8cc11126bc3ec078053b7c9f69b40c Makefile.PL
 SHA1 32db9f5efd2a4a7f11a73de148647d8310fd0fb3 README
 SHA1 886fa7bf70cf69d8b6050355754f6d9ec2567115 TODO
@@ -59,10 +59,11 @@ SHA1 22fe366553e51dd33226a70f15b939213b9b91a9 lib/PAR/Filter/Bytecode.pm
 SHA1 3d05249a79d9534ea8565b984ea9dd23a86f7d2e lib/PAR/Filter/Obfuscate.pm
 SHA1 650fa094245de4f5b9ed03ae5257fb9b3d8ddba6 lib/PAR/Filter/PatchContent.pm
 SHA1 8a40b2673f73887cd05f2c66e08f01919f81db38 lib/PAR/Filter/PodStrip.pm
-SHA1 7aa695e4a2fd69e76c41976147ed5f92f7148928 lib/PAR/Packer.pm
+SHA1 0771c62d6e7ec1af66f3720911cb3e02e4d39a8b lib/PAR/Packer.pm
 SHA1 bd5bcca84ad3016b97603bf00dd1a166f1f20857 lib/PAR/StrippedPARL/Base.pm
 SHA1 6712ed7fe23fcde5a19d6df18eaaa77729d6a457 lib/PAR/StrippedPARL/Dynamic.pm
 SHA1 aae2dd3825709c3e771b202bae80c47895fdb670 lib/PAR/StrippedPARL/Static.pm
+SHA1 108548dc26d3edf565bdc4cf19f7aafcd6c1d174 lib/pp.pm
 SHA1 98f65730e7efb31f07acd51ec9136bc6b5604121 myldr/Makefile.PL
 SHA1 9be4aa1f08dd1cfae0ed6ab51978d3fc78cdf2a5 myldr/encode_append.pl
 SHA1 c279afbd04fdc682c0889743f1ecfbec4d5c2e8f myldr/env.c
@@ -82,7 +83,7 @@ SHA1 fa6066c09715081d4d3f36685852207ff70caf9e myldr/win32.res
 SHA1 c2186f98dd13bc70c29beeede8d4a0fc598791a3 package/parl.nsi
 SHA1 d1a67f73d77b552393eec01aded63e59a1f684c1 script/par.pl
 SHA1 8ec91bc589fc78cf9d4d8f0ee6bc0a62eebfae3b script/parl.pod
-SHA1 1f0ccb87acfaabb2832b56e9455ff541c5c2d27c script/pp
+SHA1 ee9faaf1c17eb9cae4b3300faa8b1f47b11051cc script/pp
 SHA1 8fa71d5726e8c6c0e484d6ccb20cc0bd83b669b6 script/tkpp
 SHA1 3467e6bd4b5227f8e1e21f45832b279c2e8c5b7f t/00-pod.t
 SHA1 ecc2a196239e92b39b71eeb5d31817584ff8a74f t/10-parl-generation.t
@@ -92,7 +93,7 @@ SHA1 0146f0bd0bac69300c4317accbe2d9c69e18fef7 t/test-proc
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.3 (GNU/Linux)
 
-iD8DBQFFcDmSZCuimE51gxcRAgLUAJ9pPhhJJ5ORDq3XHSMVjjya5Pt5egCfUOUZ
-GilhjcYZ7629o6wVLLIGvfQ=
-=k3+5
+iD8DBQFFcwqSZCuimE51gxcRAidPAKCADJfelXe6erVW+KlNEEpAJHJqGACfUr4Z
+uMyTrHKf2knJfCP8g+b1cHA=
+=H+81
 -----END PGP SIGNATURE-----

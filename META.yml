@@ -1,8 +1,12 @@
+--- 
 abstract: PAR Packager
 author: Audrey Tang <cpan@audreyt.org>
 distribution_type: module
 generated_by: Module::Install version 0.640
 license: perl
+meta-spec: 
+  url: http://module-build.sourceforge.net/META-spec-v1.3.html
+  version: 1.3
 name: PAR-Packer
 no_index: 
   directory: 
@@ -28,7 +32,7 @@ provides:
     file: lib/PAR/Filter/PodStrip.pm
   PAR::Packer: 
     file: lib/PAR/Packer.pm
-    version: 0.970
+    version: 0.973
   PAR::StrippedPARL::Base: 
     file: lib/PAR/StrippedPARL/Base.pm
     version: 0.958
@@ -38,6 +42,9 @@ provides:
   PAR::StrippedPARL::Static: 
     file: lib/PAR/StrippedPARL/Static.pm
     version: 0.958
+  pp: 
+    file: lib/pp.pm
+    version: ''
 recommends: 
   Digest: Module::Signature
 requires: 
@@ -46,7 +53,7 @@ requires:
   File::Temp: 0.05
   Getopt::ArgvFile: 1.07
   Module::ScanDeps: 0.7
-  PAR: 0.97
+  PAR: 0.971
   PAR::Dist: 0.21
   perl: 5.6.0
-version: 0.970
+version: 0.973

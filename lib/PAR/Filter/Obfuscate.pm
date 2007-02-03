@@ -1,6 +1,7 @@
 package PAR::Filter::Obfuscate;
-
+use 5.006;
 use strict;
+use warnings;
 use base 'PAR::Filter';
 use File::Temp ();
 
@@ -44,7 +45,7 @@ sub apply {
 
 =head1 SEE ALSO
 
-L<PAR::Filter>, L<B::Deobfuscate>
+L<PAR::Filter>, L<B::Deobfuscate>, L<PAR::Filter::Crypto>
 
 =head1 AUTHORS
 

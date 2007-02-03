@@ -1,9 +1,9 @@
 package PAR::Packer;
-$PAR::Packer::VERSION = '0.970';
-
 use 5.006;
 use strict;
 use warnings;
+
+our $VERSION = '0.973';
 
 =head1 NAME
 
@@ -574,7 +574,7 @@ YAML
         $dep_list = join ', ', keys %dep_zips;
         $self->_vprint(0, "$self->{output} will require $dep_list at runtime");
 
-        $manifest =~ s/$_\n// for (keys %dep_zip_files);
+        $manifest =~ s/\Q$_\E\n// for (keys %dep_zip_files);
     }
 
     $self->_vprint(2, "... updating $_") for qw(MANIFEST META.yml);
@@ -661,6 +661,9 @@ sub pack_manifest_hash {
         $self->_name2moddata($name, \@modules, \@data);
     }
 
+    # Skip either
+    # a) all files from a .par file or
+    # b) A module
     foreach my $name ('PAR', @{ $opt->{X} || [] }) {
         if (-f $name and my $dep_zip = Archive::Zip->new($name)) {
             for ($dep_zip->memberNames()) {

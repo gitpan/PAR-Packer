@@ -1,6 +1,7 @@
 package PAR::Filter::PatchContent;
-
+use 5.006;
 use strict;
+use warnings;
 use base 'PAR::Filter';
 
 =head1 NAME

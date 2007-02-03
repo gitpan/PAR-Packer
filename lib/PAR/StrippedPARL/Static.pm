@@ -1,8 +1,8 @@
 package PAR::StrippedPARL::Static;
+use 5.006;
 use strict;
 use warnings;
-use vars qw/$VERSION/;
-$VERSION = '0.958';
+our $VERSION = '0.958';
 
 use base 'PAR::StrippedPARL::Base';
 

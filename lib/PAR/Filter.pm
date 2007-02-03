@@ -1,5 +1,8 @@
 package PAR::Filter;
-$PAR::Filter::VERSION = '0.02';
+use 5.006;
+use strict;
+use warnings;
+our $VERSION = '0.02';
 
 =head1 NAME
 

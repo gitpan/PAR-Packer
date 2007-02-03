@@ -1,8 +1,8 @@
 package PAR::StrippedPARL::Base;
+use 5.006;
 use strict;
 use warnings;
-use vars qw/$VERSION/;
-$VERSION = '0.958';
+our $VERSION = '0.958';
 
 use File::Temp ();
 use File::Spec;

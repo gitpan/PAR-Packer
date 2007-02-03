@@ -12,7 +12,7 @@ requires    'Compress::Zlib'    => ($^O eq 'MSWin32') ? 1.16 : 1.30;
 requires    'Archive::Zip'      => 1.00;
 requires    'Module::ScanDeps'  => 0.70;
 requires    'PAR::Dist'         => 0.21;
-requires    'PAR'               => 0.97;
+requires    'PAR'               => '0.971';
 requires    'Getopt::ArgvFile'  => 1.07;
 
 if ($^O eq 'MSWin32') {
@@ -41,6 +41,19 @@ auto_install_now    -default => 0;
 auto_provides;
 
 par_base 'SMUELLER';
+
+
+if (defined($ENV{PERL5LIB}) || defined($ENV{PERLLIB})) {
+    warn <<'WARNING';
+*** You have extra Perl library paths set in your environment.
+    Please note that these paths (set with PERL5LIB or PERLLIB)
+    are not honored by perl when running under taint mode, which
+    may lead to problems. This is a limitation (by design) of
+    Perl, not of PAR::Packer; but some of the problems may
+    manifest here during installation.
+
+WARNING
+}
 
 par_prehook();
 WriteAll sign => 1;

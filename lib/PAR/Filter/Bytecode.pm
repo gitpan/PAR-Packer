@@ -1,6 +1,7 @@
 package PAR::Filter::Bytecode;
-
+use 5.006;
 use strict;
+use warnings;
 use base 'PAR::Filter';
 use File::Temp ();
 

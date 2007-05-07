@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.973';
+our $VERSION = '0.975';
 
 =head1 NAME
 
@@ -1367,8 +1367,11 @@ sub _generate_output {
     my $output   = $self->{output};
     my $par_file = $self->{par_file};
 
-    my @args = ('-B', "-O$output", $par_file);
+    my @args = ("-O$output", $par_file);
     unshift @args, '-q' unless $opt->{v} > 0;
+    if ($opt->{B}) {
+        unshift @args, "-B";
+    } 
     if ($opt->{L}) {
         unshift @args, "-L".$opt->{L};
     }

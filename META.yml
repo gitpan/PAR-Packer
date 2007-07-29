@@ -2,7 +2,7 @@
 abstract: PAR Packager
 author: Audrey Tang <cpan@audreyt.org>
 distribution_type: module
-generated_by: Module::Install version 0.65
+generated_by: Module::Install version 0.67
 license: perl
 meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
@@ -19,7 +19,7 @@ provides:
     version: 0.91
   PAR::Filter: 
     file: lib/PAR/Filter.pm
-    version: 0.02
+    version: 0.03
   PAR::Filter::Bleach: 
     file: lib/PAR/Filter/Bleach.pm
   PAR::Filter::Bytecode: 
@@ -32,7 +32,7 @@ provides:
     file: lib/PAR/Filter/PodStrip.pm
   PAR::Packer: 
     file: lib/PAR/Packer.pm
-    version: 0.975
+    version: 0.976
   PAR::StrippedPARL::Base: 
     file: lib/PAR/StrippedPARL/Base.pm
     version: 0.975
@@ -53,7 +53,7 @@ requires:
   File::Temp: 0.05
   Getopt::ArgvFile: 1.07
   Module::ScanDeps: 0.74
-  PAR: 0.973
+  PAR: 0.976
   PAR::Dist: 0.22
   perl: 5.6.0
-version: 0.975
+version: 0.976

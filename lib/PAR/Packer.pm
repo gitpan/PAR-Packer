@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.976';
+our $VERSION = '0.977';
 
 =head1 NAME
 
@@ -44,6 +44,7 @@ use constant OPTIONS => {
     'c|compile'      => 'Compile code to get dependencies',
     'd|dependent'    => 'Do not include libperl',
     'e|eval:s'       => 'Packing one-liner',
+    'E|evalfeature:s'=> 'Packing one-liner with new syntactic features',
     'x|execute'      => 'Execute code to get dependencies',
     'X|exclude:s@'   => 'Exclude modules',
     'f|filter:s@'    => 'Input filters for scripts',
@@ -300,6 +301,11 @@ sub _parse_opts {
 
     $self->{logfh} = $self->_open('>>', $opt->{L})
       if length $opt->{L};
+
+    if ($opt->{E}) {
+        $opt->{e} = "use $];\n#line 1\n$opt->{E}";
+        push @{$opt->{M}||=[]}, 'feature' if $] >= 5.009;
+    }
 
     if ($opt->{e}) {
         $self->_warn("Using -e 'code' as input file, ignoring @$args\n")
@@ -1253,6 +1259,7 @@ sub _par_to_exe {
 
         $self->_fix_console();
         unlink($self->{parl});
+        unlink($self->{orig_parl});
         unlink("$self->{parl}.bak");
         return;
     }
@@ -1675,7 +1682,7 @@ Please submit bug reports to E<lt>bug-par@rt.cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright 2004, 2005, 2006 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
+Copyright 2004-2007 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

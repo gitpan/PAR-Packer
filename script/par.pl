@@ -159,10 +159,73 @@ followed by a 8-bytes magic string: "C<\012PAR.pm\012>".
 
 my ($par_temp, $progname, @tmpfile);
 END { if ($ENV{PAR_CLEAN}) {
-    unlink @tmpfile;
+    require File::Temp;
+    require File::Basename;
+    require File::Spec;
+    my $topdir = File::Basename::dirname($par_temp);
+    outs(qq{Removing files in "$par_temp"});
+    File::Find::finddepth(sub { ( -d ) ? rmdir : unlink }, $par_temp);
     rmdir $par_temp;
-    $par_temp =~ s{[^\\/]*[\\/]?$}{};
-    rmdir $par_temp;
+    rmdir $topdir;
+
+    if (-d $par_temp) {
+        # Something went wrong unlinking the temporary directory.  This
+        # typically happens on platforms that disallow unlinking shared
+        # libraries and executables that are in use. Unlink with a background
+        # shell command so the files are no longer in use by this process.
+
+        my $tmp = new File::Temp(
+            TEMPLATE => 'tmpXXXXX',
+            DIR => File::Basename::dirname($topdir),
+            SUFFIX => '.cmd',
+            UNLINK => 0,
+        );
+
+        # Because the par_temp directory is going to be deleted in a
+        # background process, the parent process id may be reused before the
+        # background process completes.  To ensure that the temporary
+        # directory does not get reused while it is being deleted, try to
+        # rename it to a name that is related to the temporary script file.
+
+        my $tmpname = (File::Spec->splitpath($tmp->filename))[2]; # filename
+        $tmpname =~ s/\.[^.]*$/.dir/;
+        my $newDir = File::Spec->catpath(
+            (File::Spec->splitpath($par_temp))[0..1], $tmpname);
+        if (rename $par_temp, $newDir) {
+            outs("Renamed $par_temp to $newDir");
+            $par_temp = $newDir;
+        }
+
+        if ($^O =~ m/win32/i) {
+            print $tmp "
+:loop
+rmdir /q /s \"$par_temp\"
+if exist \"$par_temp\" goto loop
+rmdir \"$topdir\"
+rm \"" . $tmp->filename . "\"
+";
+            close $tmp;
+            my $proc;
+            Win32::Process::Create(
+                $proc, $ENV{COMSPEC},
+                "$ENV{COMSPEC} /c \"" . $tmp->filename . "\" >nul 2>nul ",
+                1, NORMAL_PRIORITY_CLASS, "."
+            );
+        } else {
+            print $tmp "#!/bin/sh
+while [ -d '$par_temp' ]; do
+   rm -rf '$par_temp'
+done
+rmdir '$topdir'
+rm '" . $tmp->filename . "'
+";
+            chmod 0700,$tmp->filename;
+            my $cmd = $tmp->filename . ' >/dev/null 2>&1 &';
+            close $tmp;
+            system($cmd);
+        }
+        outs(qq(Spawned background process to perform cleanup));
+    }
 } }
 
 BEGIN {
@@ -659,7 +722,7 @@ sub CreatePath {
     
     require File::Path;
     
-	File::Path::mkpath($path) unless(-e $path); # mkpath dies with error
+    File::Path::mkpath($path) unless(-e $path); # mkpath dies with error
 }
 
 sub require_modules {
@@ -688,7 +751,9 @@ sub require_modules {
     require PAR::Heavy;
     require PAR::Dist;
     require PAR::Filter::PodStrip;
+    eval { require Cwd };
     eval { require Win32 };
+    eval { require Win32::Process };
     eval { require Scalar::Util };
     eval { require Archive::Unzip::Burst };
 }
@@ -825,8 +890,8 @@ sub _fix_progname {
     }
 
     # XXX - hack to make PWD work
-    my $pwd = (defined &Win32::GetCwd) ? Win32::GetCwd() : $ENV{PWD};
-    $pwd = `pwd` if !defined $pwd;
+    my $pwd = (defined &Cwd::getcwd) ? Cwd::getcwd()
+                : ((defined &Win32::GetCwd) ? Win32::GetCwd() : `pwd`);
     chomp($pwd);
     $progname =~ s/^(?=\.\.?\Q$Config{_delim}\E)/$pwd$Config{_delim}/;
 

@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.977';
+our $VERSION = '0.978';
 
 =head1 NAME
 
@@ -431,7 +431,9 @@ sub run_pack {
     my $output = $self->{output};
     my $args   = $self->{args};
 
-    $output = File::Spec->catfile(".", $output);
+    if (!File::Spec->file_name_is_absolute($output)) {
+	$output = File::Spec->catfile(".", $output);
+    }
 
     my @loader = ();
     push(@loader, $^X) if ($opt->{P});
@@ -1682,7 +1684,7 @@ Please submit bug reports to E<lt>bug-par@rt.cpan.orgE<gt>.
 
 =head1 COPYRIGHT
 
-Copyright 2004-2007 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
+Copyright 2004-2008 by Audrey Tang E<lt>cpan@audreyt.orgE<gt>.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

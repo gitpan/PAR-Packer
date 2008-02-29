@@ -10,7 +10,7 @@ all_from    'lib/PAR/Packer.pm';
 requires    'File::Temp'        => 0.05;
 requires    'Compress::Zlib'    => ($^O eq 'MSWin32') ? 1.16 : 1.30;
 requires    'Archive::Zip'      => 1.00;
-requires    'Module::ScanDeps'  => 0.81;
+requires    'Module::ScanDeps'  => 0.78;
 requires    'PAR::Dist'         => 0.22;
 requires    'PAR'               => '0.977';
 requires    'Getopt::ArgvFile'  => 1.07;
@@ -18,6 +18,7 @@ requires    'Getopt::ArgvFile'  => 1.07;
 if ($^O eq 'MSWin32') {
     requires  'Parse::Binary'     => 0.04;
     requires  'Win32::Exe'        => 0.04;
+    requires  'Win32::Process';
 }
 
 if (can_use('Crypt::OpenPGP') or can_run('gpg')) {
@@ -55,8 +56,7 @@ WARNING
 }
 
 par_prehook();
-WriteAll;
-#WriteAll sign => 1;
+WriteAll sign => 1;
 par_posthook();
 
 my %no_parl  = ();
@@ -105,6 +105,10 @@ sub par_prehook {
 
     clean_files(@bin) if $par or $cc;
 
+    # Do not run 10parl-generation tests in case of a pre built .par (doesn't work)
+    my $pgentest = (!$par and $cc) ? ' t/10-parl-generation.t ' : '';
+    my $tests = qq(t/00-pod.t$pgentest t/20-pp.t t/30-current_exec.t);
+
     makemaker_args(
         MAN1PODS		=> {
             'script/par.pl'	=> 'blib/man1/par.pl.1',
@@ -131,6 +135,7 @@ sub par_prehook {
           ) : (),
         ],
         NEEDS_LINKING	        => 1,
+        test => { TESTS => $tests },
     );
 }
 

@@ -1,8 +1,10 @@
 AUTHORS
 ChangeLog
 contrib/automated_pp_test/automated_pp_test.pl
+contrib/automated_pp_test/automated_pp_test.pl.orig
 contrib/automated_pp_test/hello_tk.pl
 contrib/automated_pp_test/hi.ico
+contrib/automated_pp_test/patch.diff
 contrib/automated_pp_test/pipe_a_command.pm
 contrib/automated_pp_test/prior_to_test.pm
 contrib/automated_pp_test/remove_file_and_try_executable_again.pm
@@ -26,6 +28,7 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/PAR.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
+inc/PerlIO.pm
 inc/Test/Builder.pm
 inc/Test/Builder/Module.pm
 inc/Test/More.pm
@@ -67,9 +70,11 @@ script/par.pl
 script/parl.pod
 script/pp
 script/tkpp
+t/00-foo.t
 t/00-pod.t
 t/10-parl-generation.t
 t/20-pp.t
 t/30-current_exec.t
 t/test-proc
 TODO
+SIGNATURE                                Public-key signature (added by MakeMaker)

@@ -1,0 +1,102 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.55.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 efe4dae0aa587fa92bb6e0acb98ecaecaf8103f8 AUTHORS
+SHA1 7cd4730983688e7437b304d1a6d3db059f1102a5 ChangeLog
+SHA1 0c4a5491118bd87185e67a7247090ec3f2d6af38 MANIFEST
+SHA1 1b76a18f37473dd21b20f8ae98c8d5a27bbfab03 MANIFEST.SKIP
+SHA1 3d19e965a345ae7b9fdf3128fae362d7cf7e01e8 META.yml
+SHA1 11aa10449549852d54cb2ca5893f4696a075e3e9 Makefile.PL
+SHA1 020a739a0f9c6b3d6269e45c2fd3d8cb45a49910 README
+SHA1 886fa7bf70cf69d8b6050355754f6d9ec2567115 TODO
+SHA1 81a46d4d569a5014bfd02fad6e5b6af70fb43ec5 contrib/automated_pp_test/automated_pp_test.pl
+SHA1 5c45c8c5089e7eafdfd2937f3ac1f1cf0ecb9934 contrib/automated_pp_test/automated_pp_test.pl.orig
+SHA1 31c0a2375a9f05052499fce55574b0411786f372 contrib/automated_pp_test/hello_tk.pl
+SHA1 3a32ffa47e874433d554b80633a3e125901d1bcf contrib/automated_pp_test/hi.ico
+SHA1 30010c33ed8e088b720d6c7d25eb774ddb43b3f7 contrib/automated_pp_test/patch.diff
+SHA1 d5d0c6cc0d13ed428ce51d99387e366471f1ac70 contrib/automated_pp_test/pipe_a_command.pm
+SHA1 b71b276dc9bd9fef3dc534ead9c9aea001f83b12 contrib/automated_pp_test/prior_to_test.pm
+SHA1 b59d11c31c7f5d8f1ad5e8e67bb08008d8ec74a5 contrib/automated_pp_test/remove_file_and_try_executable_again.pm
+SHA1 6491158cf82d6682209955c1ad9a26c1759790b6 contrib/automated_pp_test/test_in_further_subdir.pm
+SHA1 2b131d29057aeb0b63d4b98e80eeeebc62002a27 contrib/docs/where_is_it.txt
+SHA1 de2340efaea767d9367c1f92c7e117c747dfd48c contrib/docs/who_am_i.txt
+SHA1 5f6ae715822f2483c9ada55ab32dfcaf2798667a contrib/gui_pp/gpp
+SHA1 13db62c6e2077cd551d2aaee85fab52795440e4a contrib/gui_pp/gpp_readme.txt
+SHA1 0e486fcdfccc73b120b72aad213a0a3b87e4a347 contrib/pare/pare
+SHA1 0d80cbbe5457a5a2db9c3cf7115c828d46ad1fe4 contrib/pare/pare_readme.txt
+SHA1 f1a564c8a7cf5ed4cbb893f2f9277527661fc44b contrib/procedural_pp/pp_old
+SHA1 eff2e79f0964da302217673f16abea9424a2bbdd contrib/stdio/Stdio.pm
+SHA1 e44e340a0a4b63c57a81173f3592c6f9c21c0d4d contrib/stdio/Stdio_readme.txt
+SHA1 7e2cfa1b9efe0d502ee57717649c90ba4bd28ba9 inc/Module/Install.pm
+SHA1 6e1392d80a0f239eecd5664f7f21f922cedb9329 inc/Module/Install/Base.pm
+SHA1 f69417fe831d9cc22a78f00a617afadceade4d81 inc/Module/Install/Can.pm
+SHA1 c61d02895330310048bf388881b5e2e064031561 inc/Module/Install/Fetch.pm
+SHA1 4933b00c3a646da8d223c6957f94552bbd62f8c6 inc/Module/Install/Include.pm
+SHA1 54fcbed19232ec959bb17cfb4410599afc7f0779 inc/Module/Install/Makefile.pm
+SHA1 7d3be9b158e37b2b2c22084740099955623b1d56 inc/Module/Install/Metadata.pm
+SHA1 ae9917eae1b4831d03acc1a88aeee785f3fb9bcd inc/Module/Install/PAR.pm
+SHA1 0a8b66180229ba2f9deaea1fedd0aacf7a7ace6b inc/Module/Install/Win32.pm
+SHA1 d3352eb33fe43a5f3ead513f645224fe34d73bc9 inc/Module/Install/WriteAll.pm
+SHA1 8b1cc43f1fc02b371cf5232e7071d3c2697f9f78 inc/PerlIO.pm
+SHA1 4f29a27c21fbf9808140f69496e8c26f586c7ab6 inc/Test/Builder.pm
+SHA1 15260d018c2f7dd0dc9705a621684149742e7a5f inc/Test/Builder/Module.pm
+SHA1 0b8387e071b32d2d595715e303e18c3d4579ca33 inc/Test/More.pm
+SHA1 8c31beae84b923a81349c7de7b0e9f3bb4ce9357 lib/App/Packer/PAR.pm
+SHA1 6e2fa0fb0372568e1003345619307625f61ad2b2 lib/PAR/Filter.pm
+SHA1 9e0db74fdaa07b1041b3f303f23366534709babd lib/PAR/Filter/Bleach.pm
+SHA1 43320f4d90de40c020fbf1c7cb7f7705946f0cb9 lib/PAR/Filter/Bytecode.pm
+SHA1 f0127fc5611c2303e51884979c64bb8b36816a7e lib/PAR/Filter/Obfuscate.pm
+SHA1 50ca4347964bfc56c589774343f240bb0d3d67ad lib/PAR/Filter/PatchContent.pm
+SHA1 cd3bf384e8d09993fbcfe887d9836dd6638fc887 lib/PAR/Filter/PodStrip.pm
+SHA1 5e1caff8bc6a746d0db6a42e396fcd51a4719cfe lib/PAR/Packer.pm
+SHA1 472de6a3a0cd8d19eb09bc6a1adc6b7422d481f2 lib/PAR/StrippedPARL/Base.pm
+SHA1 fc9bbaa4f0b3902efa2d800b03e83692696baf6c lib/PAR/StrippedPARL/Dynamic.pm
+SHA1 1c960d46ac52ec735b7e8b72ca0ba83d03b6b928 lib/PAR/StrippedPARL/Static.pm
+SHA1 f15f046e75b98c19b5679d2379d9d4230a567ce7 lib/pp.pm
+SHA1 dc10994231f7f7b66e22e2aaf9ae782e1386bcb6 myldr/Makefile.PL
+SHA1 94515e9fb8a68d6f3f3b034f182a9b32fb0ec54c myldr/encode_append.pl
+SHA1 c279afbd04fdc682c0889743f1ecfbec4d5c2e8f myldr/env.c
+SHA1 22dd487f91ff6160afdda9bf5db8cc1f169191f7 myldr/file2c.pl
+SHA1 be04fdb0e8d40636f16dd5f0f3abe91e37fb042d myldr/internals.c
+SHA1 cd4147d4c99ecf72d3cc5935a495816d553f3b8d myldr/main.c
+SHA1 a53998577fc7bd39dc9aa65e0d2e48f98c369db2 myldr/mktmpdir.c
+SHA1 20147ca3292113752bcdcea31713e43dda0c8bb9 myldr/mktmpdir.h
+SHA1 72afd945a0dc5ed00ab5af9ab962727fcf555525 myldr/parlsig.pl
+SHA1 89862cdbf80d79e6525966589bc6cd3df93fb785 myldr/sha1.c.PL
+SHA1 d0000c41f32824cd565465b985ac18feb49bcf7d myldr/static.c
+SHA1 8e62c3245b92ea09539ba3d44a533e70e3fcea08 myldr/usernamefrompwuid.c
+SHA1 bb4324cdb17f8ad58d677efa6e4f3239445a2bdb myldr/utils.c
+SHA1 7b3e5be07f3db44c7f1a37ece3feea173e39fa9d myldr/win32.coff
+SHA1 32d843a5700babb314f255c171c4852637d66b1f myldr/win32.obj
+SHA1 fa6066c09715081d4d3f36685852207ff70caf9e myldr/win32.res
+SHA1 c2186f98dd13bc70c29beeede8d4a0fc598791a3 package/parl.nsi
+SHA1 27775e75f2f7b1de634b4219a3536a38aacc0099 script/par.pl
+SHA1 8ec91bc589fc78cf9d4d8f0ee6bc0a62eebfae3b script/parl.pod
+SHA1 ee9faaf1c17eb9cae4b3300faa8b1f47b11051cc script/pp
+SHA1 8fa71d5726e8c6c0e484d6ccb20cc0bd83b669b6 script/tkpp
+SHA1 76389379addba643ac21284972aa94a7790d13f0 t/00-foo.t
+SHA1 3467e6bd4b5227f8e1e21f45832b279c2e8c5b7f t/00-pod.t
+SHA1 ecc2a196239e92b39b71eeb5d31817584ff8a74f t/10-parl-generation.t
+SHA1 3b8ab1207b358709716fc05aa5da339f630d44b6 t/20-pp.t
+SHA1 814fb824065de5f8a2846e45439b5264de7dafd9 t/30-current_exec.t
+SHA1 764f473b8ba7156d8dbbe5a6470d72101bec3bee t/test-proc
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.6 (GNU/Linux)
+
+iD8DBQFHyE/5ZCuimE51gxcRAuxuAJ9fshj0qW4VSFAxLx+ymWoqiii3IwCgsCc9
+Pnz4zHcKqjLo35Vvly9+x6M=
+=4f9g
+-----END PGP SIGNATURE-----

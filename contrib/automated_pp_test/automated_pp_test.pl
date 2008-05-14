@@ -5802,12 +5802,16 @@ sub create_small_minus_a_pl_file {
   }
 
 #......................................................................
-my $pl_verbiage = <<HERE;
-#!/usr/bin/perl
-use PAR;
-my \$text = PAR::read_file("$modified_fqpn");
-print(\$text);
-HERE
+my $pl_verbiage = 
+'#!/usr/bin/perl' . "\n" .
+'use PAR;' . "\n" .
+'my $line;' . "\n" .
+"\n" .
+'my $text = "";' . "\n" .
+'$text = PAR::read_file("' . $modified_fqpn . '");' . "\n" .
+"\n" .
+'print($text);' . "\n" .
+"\n";
 
 #......................................................................
   $error = create_file($hello_pl_file,
@@ -6901,8 +6905,6 @@ GetOptions(  "verbose"         => \$verbose,
 
 
 $verbose = 0 if (!defined($verbose) or ($verbose eq ""));
-$verbose = 1;
-$startdir = "/userdata2/smueller/par/PAR-Packer/trunk/tmp";
 
 $perl = $^X if ($perl eq "");
 if (!(-e($perl))) {

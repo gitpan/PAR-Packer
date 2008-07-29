@@ -135,7 +135,7 @@ replaced by F<a.exe> instead.
 
     # Pack 'hello' into a console-less 'out.exe' with icon (Win32 only)
     % pp --gui --icon hello.ico -o out.exe hello
-    
+
     % pp @file hello.pl         # Pack 'hello.pl' but read _additional_
                                 # options from file 'file'
 
@@ -411,7 +411,11 @@ different expected settings:
 
 =over 4
 
-=item Stand-alone setup
+=item Stone-alone setup:
+
+To make a stand-alone executable, suitable for running on a
+machine that doesn't have perl installed:
+
 
     % pp -o packed.exe source.pl        # makes packed.exe
     # Now, deploy 'packed.exe' to target machine...
@@ -419,29 +423,43 @@ different expected settings:
 
 =item Perl interpreter only, without core modules:
 
-    % pp -B -P -o packed.pl source.pl   # makes packed.exe
-    # Now, deploy 'packed.exe' to target machine...
+To make a packed .pl file including core modules, suitable
+for running on a machine that has a perl interpreter, but where
+you want to be sure of the versions of the core modules that
+your program uses:
+
+    % pp -B -P -o packed.pl source.pl   # makes packed.pl
+    # Now, deploy 'packed.pl' to target machine...
     $ perl packed.pl                    # run it
 
-=item Perl with core module installed:
+=item Perl with core modules installed:
 
-    % pp -P -o packed.pl source.pl      # makes packed.exe
+To make a packed .pl file without core modules, relying on the target
+machine's perl interpreter and its core libraries.  This produces
+a significantly smaller file than the previous version:
+
+    % pp -P -o packed.pl source.pl      # makes packed.pl
     # Now, deploy 'packed.pl' to target machine...
     $ perl packed.pl                    # run it
 
 =item Perl with PAR.pm and its dependencies installed:
 
+Make a separate archive and executable that uses the archive. This
+relies upon the perl interpreter and libraries on the target machine.
+
     % pp -p source.pl                   # makes source.par
     % echo "use PAR 'source.par';" > packed.pl;
     % cat source.pl >> packed.pl;       # makes packed.pl
     # Now, deploy 'source.par' and 'packed.pl' to target machine...
-    $ perl packed.pl                    # run it
+    $ perl packed.pl                    # run it, perl + core modules required
 
 =back
 
 Note that even if your perl was built with a shared library, the
-'Stand-alone setup' above will I<not> need a separate F<perl5x.dll>
-or F<libperl.so> to function correctly.  Use C<--dependent> if you
+'Stand-alone executable' above will I<not> need a separate F<perl5x.dll>
+or F<libperl.so> to function correctly.  But even in this case, the
+underlying system libraries such as I<libc> must be compatible between
+the host and target machines.  Use C<--dependent> if you
 are willing to ship the shared library with the application, which
 can significantly reduce the executable size.
 

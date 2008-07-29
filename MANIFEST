@@ -61,6 +61,7 @@ myldr/utils.c
 myldr/win32.coff
 myldr/win32.obj
 myldr/win32.res
+package/parl.nsi
 README
 script/par.pl
 script/parl.pod

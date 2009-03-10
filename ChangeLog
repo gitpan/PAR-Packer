@@ -1,3 +1,22 @@
+[Changes for 0.989_01 - Mar 10, 2009]
+* New features
+    - Add Roderich's reeally useful debugging tool "extract_embedded.pl" to
+      the contrib/ subdirectory. It can be used to extract the contents of a
+      "parl" binary.
+
+* Bug fixes, etc.
+    - Add Errno and Tie::Hash::NamedCapture (if available) to required_modules
+    - Fix the stripping of =encoding POD lines in PAR::Filter::PodStrip
+    - Throw a proper error if a module specified via -M cannot be found
+      (Roderich Schupp, Gabor Szabo)
+    - Don't update exe's with icons twice on Win32.
+    - Band-aid fix for RT #41790 in par.pl
+    - Some very slightly more careful handling of environment variables in par.pl
+    - Fix SEGV crash during startup if $PATH is not defined (Johannes Lode)
+
+* Documentation
+    - RT #12104.  Improved documentation in pp on -T/--tempcache.
+
 [Changes for 0.982 - Jul 29, 2008]
 * Bug fixes, etc.
     - Fix bleadperl compilation.

@@ -84,7 +84,7 @@ pp - PAR Packager
 
 =head1 SYNOPSIS
 
-B<pp> S<[ B<-BILMTSVXdeghilmoprsvz> ]> S<[ I<parfile> | I<scriptfile> ]>...
+B<pp> S<[ B<-ABCEFILMPTSVXacdefghilmnoprsvxz> ]> S<[ I<parfile> | I<scriptfile> ]>...
 
 =head1 EXAMPLES
 
@@ -372,6 +372,12 @@ L<Module::Signature>.
 Set the program unique part of the cache directory name that is used
 if the program is run without -C. If not set, a hash of the executable
 is used.
+
+When the program is run, its contents are extracted to a temporary
+directory.  On Unix systems, this is commonly
+F</tmp/par-USERNAME/cache-XXXXXXX>.  F<USERNAME> is replaced by the
+user running the program, and F<XXXXXXX> is either a hash of the
+executable or the value passed to the C<-T> or C<--tempcache> switch.
 
 =item B<-v>, B<--verbose>[=I<NUMBER>]
 

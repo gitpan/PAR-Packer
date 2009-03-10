@@ -9,6 +9,7 @@ contrib/automated_pp_test/remove_file_and_try_executable_again.pm
 contrib/automated_pp_test/test_in_further_subdir.pm
 contrib/docs/where_is_it.txt
 contrib/docs/who_am_i.txt
+contrib/extract_embedded/extract-embedded.pl
 contrib/gui_pp/gpp
 contrib/gui_pp/gpp_readme.txt
 contrib/pare/pare
@@ -26,6 +27,7 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/PAR.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
+inc/PerlIO.pm
 inc/Test/Builder.pm
 inc/Test/Builder/Module.pm
 inc/Test/More.pm

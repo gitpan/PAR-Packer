@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.982';
+our $VERSION = '0.989_01';
 
 =head1 NAME
 
@@ -87,14 +87,6 @@ sub new {
     # exit gracefully and clean up after ourselves.
     # note.. in constructor because of conflict.
 
-    # Up to PAR 0.957, we set the following ENV variable, but
-    # it is never, ever used anywhere in the rest of the
-    # PAR or M::SD sources, so in order to remove clutter, we
-    # comment it out. This notice and the following commented
-    # out line should be removed in a future version if no
-    # breakage occurred.
-
-    # $ENV{PAR_RUN} = 1;
     my $self = bless {}, $class;
 
     $self->set_args($args)      if ($args);
@@ -164,6 +156,7 @@ sub set_front {
     $self->{frontend} = $frontend || $opt->{frontend};
 }
 
+# check one or more files for read permissions
 sub _check_read {
     my ($self, @files) = @_;
 
@@ -185,6 +178,7 @@ sub _check_read {
     }
 }
 
+# check one or more files for write permissions
 sub _check_write {
     my ($self, @files) = @_;
 
@@ -201,6 +195,7 @@ sub _check_write {
     }
 }
 
+# check whether a given file might contain perl code (including .par's)
 sub _check_perl {
     my ($self, $file) = @_;
     return if ($self->_check_par($file));
@@ -304,6 +299,7 @@ sub _parse_opts {
 
     if ($opt->{E}) {
         $opt->{e} = "use $];\n#line 1\n$opt->{E}";
+        # XXX This is how we should also include additional default modules in the future instead of in require_modules in par.pl!
         push @{$opt->{M}||=[]}, 'feature' if $] >= 5.009;
     }
 
@@ -359,6 +355,7 @@ sub _create_valid_hash {
     }
 }
 
+# prints a dump of the OPTIONS hash
 sub _show_usage {
     my ($self) = @_;
 
@@ -705,7 +702,8 @@ sub pack_manifest_hash {
     # Apply %Preload to the -M'd modules and add them to the list of
     # files to scan
     foreach my $module (@modules) {
-        my $file = &$inc_find($module);
+        my $file = &$inc_find($module)
+          or $self->_die("Cannot find module $module (specified with -M)\n");
         push @files, $file;
         
         my $preload = Module::ScanDeps::_get_preload($module) or next;
@@ -1253,11 +1251,6 @@ sub _par_to_exe {
 
         $self->_append_parl();
         $self->_generate_output();
-
-        Win32::Exe->new($output)->update(
-            icon => $opt->{i},
-            info => $opt->{N},
-        );
 
         $self->_fix_console();
         unlink($self->{parl});

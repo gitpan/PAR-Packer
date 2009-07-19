@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.991';
+our $VERSION = '0.992_01';
 
 =head1 NAME
 
@@ -62,6 +62,7 @@ use constant OPTIONS => {
     'p|par'          => 'Generate PAR file',
     'P|perlscript'   => 'Generate perl script',
     'r|run'          => 'Run the resulting executable',
+    'reusable'       => 'Produce reusable executable',
     'S|save'         => 'Preserve intermediate PAR files',
     's|sign'         => 'Sign PAR files',
     'T|tempcache:s'  => 'Temp cache name',
@@ -72,7 +73,7 @@ use constant OPTIONS => {
 };
 
 my $ValidOptions = {};
-my $LongToShort = { map { /^(\w+)\|(\w+)/ ? ($1, $2) : () } keys %{+OPTIONS} };
+my $LongToShort = { map { /^(\w+)\|(\w+)/ ? ($1, $2) : () } grep /\|/, keys %{+OPTIONS} };
 my $ShortToLong = { reverse %$LongToShort };
 my $PerlExtensionRegex = qr/\.(?:al|ix|p(?:lx|l|h|m))\z/i;
 my (%dep_zips, %dep_zip_files);
@@ -134,7 +135,7 @@ sub _translate_options {
         else {
             $opt->{$key} = $value;
             my $other = $LongToShort->{$key} || $ShortToLong->{$key};
-            $opt->{$other} = $value;
+            $opt->{$other} = $value if defined $other;
         }
     }
 }
@@ -290,8 +291,8 @@ sub _parse_opts {
     $opt->{z} = Archive::Zip::COMPRESSION_LEVEL_DEFAULT if $opt->{z} < 0;
     $opt->{z} = 9 if $opt->{z} > 9;
 
-    $self->{output}      = $opt->{o}            || $self->_a_out();
     $opt->{o}            = $opt->{o}            || $self->_a_out();
+    $self->{output}      = $opt->{o};
     $self->{script_name} = $self->{script_name} || $opt->{script_name} || $0;
 
     $self->{logfh} = $self->_open('>>', $opt->{L})
@@ -300,7 +301,7 @@ sub _parse_opts {
     if ($opt->{E}) {
         $opt->{e} = "use $];\n#line 1\n$opt->{E}";
         # XXX This is how we should also include additional default modules in the future instead of in require_modules in par.pl!
-        push @{$opt->{M}||=[]}, 'feature' if $] >= 5.009;
+        push @{ $opt->{M} ||= [] }, 'feature' if $] >= 5.009;
     }
 
     if ($opt->{e}) {
@@ -604,7 +605,7 @@ sub get_par_file {
         # We need to keep it.
 
         if ($opt->{e} or !@$input) {
-            $par_file = "a.par";
+            $par_file = (defined $output ? $output : "a.par");
         }
         else {
             $par_file = $input->[0];
@@ -614,8 +615,7 @@ sub get_par_file {
             $par_file .= ".par";
         }
 
-        $par_file = $output if $opt->{p} and $output =~ /\.par\z/i;
-        $output = $par_file if $opt->{p};
+        $par_file = $output if $opt->{p};
 
         $self->_check_write($par_file);
     }
@@ -1570,9 +1570,13 @@ sub _can_run {
 sub _main_pl_multi {
     my ($self) = @_;
    
+    # insert code for @INC cleaning (in case of bundling core modules)
     my $clean_inc = $self->_main_pl_clean();
-    
-    return << '__MAIN__' . $clean_inc . "PAR::_run_member(\$member, 1);\n\n";
+    # insert code for reusable apps
+    my $reuse_app = $self->_main_pl_reuse();
+
+    # FIXME The $reuse_app code was written for _main_pl_single -- is it correct for this as well?
+    return $reuse_app . "\n" . <<'__MAIN__' . $clean_inc . "PAR::_run_member(\$member, 1);\n\n";
 my $file = $ENV{PAR_PROGNAME};
 my $zip = $PAR::LibCache{$ENV{PAR_PROGNAME}} || Archive::Zip->new(__FILE__);
 $file =~ s/^.*[\/\\]//;
@@ -1601,9 +1605,15 @@ sub _open {
 sub _main_pl_single {
     my ($self, $file) = @_;
     
+    # insert code for @INC cleaning (in case of bundling core modules)
     my $clean_inc = $self->_main_pl_clean();
+    # insert code for reusable apps
+    my $reuse_app = $self->_main_pl_reuse();
 
     return << "__MAIN__";
+
+$reuse_app
+
 my \$zip = \$PAR::LibCache{\$ENV{PAR_PROGNAME}} || Archive::Zip->new(__FILE__);
 my \$member = eval { \$zip->memberNamed('$file') }
         or die qq(main.pl: Can't open perl script "$file": No such file or directory (\$zip));
@@ -1613,6 +1623,39 @@ $clean_inc
 PAR::_run_member(\$member, 1);
 
 __MAIN__
+}
+
+sub _main_pl_reuse {
+    my $self = shift;
+
+    my $opt = $self->{options};
+
+    if (!$opt->{reusable}) {
+      return <<'__NOT_REUSABLE__';
+if (defined $ENV{PAR_APP_REUSE}) {
+    warn "Executable was created without the --reusable option. See 'perldoc pp'.\n";
+    exit(1);
+}
+__NOT_REUSABLE__
+    }
+
+    # insert code for @INC cleaning (in case of bundling core modules)
+    my $clean_inc = $self->_main_pl_clean();
+
+    my $reuse = <<__REUSE_APP__;
+if (defined \$ENV{PAR_APP_REUSE}) {
+    my \$filename = \$ENV{PAR_APP_REUSE};
+    delete \$ENV{PAR_APP_REUSE};
+    \$ENV{PAR_0} = \$filename;
+
+    $clean_inc
+
+    PAR::_run_external_file(\$filename, 1);
+    exit();
+}
+__REUSE_APP__
+
+    return $reuse;
 }
 
 sub _main_pl_clean {

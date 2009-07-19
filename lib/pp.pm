@@ -5,7 +5,7 @@ use warnings;
 use PAR::Packer ();
 
 # This line is here so CPAN.pm can parse a $VERSION from us...
-our $VERSION = '0.977';
+our $VERSION = '0.992';
 
 # ...but we read our $VERSION again from PAR::Packer in case we forgot to update
 # the $VERSION above during release engineering.
@@ -357,6 +357,18 @@ Create stand-alone perl script; do not package to a standalone binary.
 =item B<-r>, B<--run>
 
 Run the resulting packaged script after packaging it.
+
+=item B<--reusable>
+
+B<EXPERIMENTAL>
+
+Make the packaged executable reusable for running arbitrary, external
+Perl scripts as if they were part of the package:
+
+  pp -o myapp --reusable someapp.pl
+  ./myapp --par-options --reuse otherapp.pl
+
+The second line will run F<otherapp.pl> instead of F<someapp.pl>.
 
 =item B<-S>, B<--save>
 

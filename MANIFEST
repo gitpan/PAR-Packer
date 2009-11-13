@@ -4,6 +4,14 @@ contrib/automated_pp_test/automated_pp_test.pl
 contrib/automated_pp_test/hello_tk.pl
 contrib/automated_pp_test/hi.ico
 contrib/automated_pp_test/pipe_a_command.pm
+contrib/automated_pp_test/pp_switch_tests/temp0/a.out
+contrib/automated_pp_test/pp_switch_tests/temp0/hello.pl
+contrib/automated_pp_test/pp_switch_tests/temp0/log_file_from_pipe
+contrib/automated_pp_test/pp_switch_tests/temp1/hello.pl
+contrib/automated_pp_test/pp_switch_tests/temp1/parloTuFRZG
+contrib/automated_pp_test/pp_switch_tests/temp2/a.out
+contrib/automated_pp_test/pp_switch_tests/temp2/hello.pl
+contrib/automated_pp_test/pp_switch_tests/temp2/log_file_from_pipe
 contrib/automated_pp_test/prior_to_test.pm
 contrib/automated_pp_test/remove_file_and_try_executable_again.pm
 contrib/automated_pp_test/test_in_further_subdir.pm

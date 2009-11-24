@@ -3,7 +3,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '1.000';
+our $VERSION = '1.001';
 
 =head1 NAME
 
@@ -320,7 +320,7 @@ sub _parse_opts {
         $self->{input} ||= [];
 
         # Reject main.pl as input file to avoid beginner confusion
-        if ( grep /main\.pl$/,
+        if ( grep /(?:^|[\/\\])main\.pl$/,
              ($opt->{r} ? ($args->[0]) : @$args) )
         {
           # -r means "run this" => extra args are execution parameters

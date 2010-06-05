@@ -17,6 +17,7 @@ contrib/pare/pare_readme.txt
 contrib/procedural_pp/pp_old
 contrib/stdio/Stdio.pm
 contrib/stdio/Stdio_readme.txt
+inc/IPC/Run3.pm
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -27,9 +28,9 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/PAR.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
+inc/parent.pm
 inc/PerlIO.pm
 inc/Test/Builder.pm
-inc/Test/Builder/IO/Scalar.pm
 inc/Test/Builder/Module.pm
 inc/Test/More.pm
 lib/App/Packer/PAR.pm

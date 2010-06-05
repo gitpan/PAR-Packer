@@ -7,6 +7,7 @@ name        'PAR-Packer';
 abstract    'PAR Packager';
 all_from    'lib/PAR/Packer.pm';
 
+perl_version '5.006001';
 requires    'File::Temp'        => 0.05;
 requires    'Compress::Zlib'    => ($^O eq 'MSWin32') ? 1.16 : 1.30;
 requires    'Archive::Zip'      => 1.00;
@@ -17,7 +18,7 @@ requires    'Getopt::ArgvFile'  => 1.07;
 
 if ($^O eq 'MSWin32') {
     requires  'Parse::Binary'     => 0.04;
-    requires  'Win32::Exe'        => 0.04;
+    requires  'Win32::Exe'        => 0.14;
     requires  'Win32::Process';
 }
 
@@ -36,7 +37,9 @@ if (can_use('Crypt::OpenPGP') or can_run('gpg')) {
             'Module::Signature';
 }
 
+test_requires       'IPC::Run3';
 include_deps        'Test::More';
+include_deps        'IPC::Run3';
 no_index            directory => 'contrib';
 auto_provides;
 

@@ -17,7 +17,6 @@ contrib/pare/pare_readme.txt
 contrib/procedural_pp/pp_old
 contrib/stdio/Stdio.pm
 contrib/stdio/Stdio_readme.txt
-inc/IPC/Run3.pm
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm

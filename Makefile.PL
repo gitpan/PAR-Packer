@@ -37,9 +37,7 @@ if (can_use('Crypt::OpenPGP') or can_run('gpg')) {
             'Module::Signature';
 }
 
-test_requires       'IPC::Run3';
 include_deps        'Test::More';
-include_deps        'IPC::Run3';
 no_index            directory => 'contrib';
 auto_provides;
 

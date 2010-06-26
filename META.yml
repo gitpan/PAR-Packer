@@ -7,7 +7,7 @@ build_requires:
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
-generated_by: 'Module::Install version 0.99'
+generated_by: 'Module::Install version 1.00'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -18,38 +18,6 @@ no_index:
     - contrib
     - inc
     - t
-provides:
-  App::Packer::PAR:
-    file: lib/App/Packer/PAR.pm
-    version: 0.91
-  PAR::Filter:
-    file: lib/PAR/Filter.pm
-    version: 0.03
-  PAR::Filter::Bleach:
-    file: lib/PAR/Filter/Bleach.pm
-  PAR::Filter::Bytecode:
-    file: lib/PAR/Filter/Bytecode.pm
-  PAR::Filter::Obfuscate:
-    file: lib/PAR/Filter/Obfuscate.pm
-  PAR::Filter::PatchContent:
-    file: lib/PAR/Filter/PatchContent.pm
-  PAR::Filter::PodStrip:
-    file: lib/PAR/Filter/PodStrip.pm
-  PAR::Packer:
-    file: lib/PAR/Packer.pm
-    version: 1.005
-  PAR::StrippedPARL::Base:
-    file: lib/PAR/StrippedPARL/Base.pm
-    version: 0.975
-  PAR::StrippedPARL::Dynamic:
-    file: lib/PAR/StrippedPARL/Dynamic.pm
-    version: 0.958
-  PAR::StrippedPARL::Static:
-    file: lib/PAR/StrippedPARL/Static.pm
-    version: 0.958
-  pp:
-    file: lib/pp.pm
-    version: 0.992
 recommends:
   Digest: Module::Signature
 requires:
@@ -64,4 +32,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://svn.openfoundry.org/par/PAR-Packer/trunk
-version: 1.005
+version: 1.006

@@ -1,6 +1,5 @@
 #defaults
 ^\..*\.sw.$
-^inc/IPC/Run3/
 ^myldr/Makefile$
 ^myldr/Makefile\.old$
 ^myldr/main.[^c].*$

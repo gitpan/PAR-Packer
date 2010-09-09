@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use 5.006001;
 use strict;
-use inc::Module::Install;
+use inc::Module::Install 0.92;
 
 name        'PAR-Packer';
 abstract    'PAR Packager';
@@ -11,7 +11,7 @@ perl_version '5.006001';
 requires    'File::Temp'        => 0.05;
 requires    'Compress::Zlib'    => ($^O eq 'MSWin32') ? 1.16 : 1.30;
 requires    'Archive::Zip'      => 1.00;
-requires    'Module::ScanDeps'  => 0.96;
+requires    'Module::ScanDeps'  => 0.98;
 requires    'PAR::Dist'         => 0.22;
 requires    'PAR'               => '1.000';
 requires    'Getopt::ArgvFile'  => 1.07;
@@ -110,8 +110,8 @@ sub par_prehook {
     clean_files(@bin) if $par or $cc;
 
     # Do not run 10parl-generation tests in case of a pre built .par (doesn't work)
-    my $pgentest = (!$par and $cc) ? ' t/10-parl-generation.t ' : '';
-    my $tests = qq(t/00-pod.t$pgentest t/20-pp.t t/30-current_exec.t t/40-packer_cd_option.t);
+    my %tests = map { $_ => 1 } <t/*.t>;
+    delete $tests{'t/10-parl-generation.t'} unless (!$par and $cc);
 
     makemaker_args(
         MAN1PODS		=> {
@@ -139,7 +139,7 @@ sub par_prehook {
           ) : (),
         ],
         NEEDS_LINKING	        => 1,
-        test => { TESTS => $tests },
+        test => { TESTS => join(" ", sort keys %tests) },
     );
 }
 

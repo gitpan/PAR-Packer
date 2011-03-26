@@ -42,13 +42,15 @@ lib/PAR/Filter/PatchContent.pm
 lib/PAR/Filter/PodStrip.pm
 lib/PAR/Packer.pm
 lib/PAR/StrippedPARL/Base.pm
-lib/PAR/StrippedPARL/Dynamic.pm
-lib/PAR/StrippedPARL/Static.pm
 lib/pp.pm
 Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml
+myldr/boot
+myldr/boot.c
+myldr/Dynamic.in
+myldr/Dynamic.pm
 myldr/encode_append.pl
 myldr/env.c
 myldr/file2c.pl
@@ -57,10 +59,13 @@ myldr/main.c
 myldr/Makefile.PL
 myldr/mktmpdir.c
 myldr/mktmpdir.h
+myldr/parl
+myldr/parldyn
 myldr/parlsig.pl
 myldr/run_with_inc.pl
 myldr/sha1.c.PL
-myldr/static.c
+myldr/Static.in
+myldr/Static.pm
 myldr/usernamefrompwuid.c
 myldr/utils.c
 myldr/win32.coff

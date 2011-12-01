@@ -1,5 +1,5 @@
 package PAR::StrippedPARL::Base;
-use 5.006;
+use 5.008001;
 use strict;
 use warnings;
 our $VERSION = '0.975';
@@ -67,6 +67,7 @@ sub write_parl {
     # Use this to generate a real parl
     my @libs = ();
     for my $ilib ( @INC ) {
+        next if ref $ilib;
         $ilib =~ s/\\$/\\\\/;
         push(@libs, qq(-I$ilib) );
     }

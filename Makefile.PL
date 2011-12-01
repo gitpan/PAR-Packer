@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-use 5.006001;
+use 5.008001;
 use strict;
 use inc::Module::Install 0.92;
 
@@ -7,15 +7,15 @@ name        'PAR-Packer';
 abstract    'PAR Packager';
 all_from    'lib/PAR/Packer.pm';
 
-perl_version '5.006001';
+perl_version '5.008001';
 configure_requires 'ExtUtils::Embed';
 requires    'File::Temp'        => 0.05;
 requires    'Compress::Zlib'    => ($^O eq 'MSWin32') ? 1.16 : 1.30;
 requires    'IO::Compress::Gzip' => 0;
 requires    'Archive::Zip'      => 1.00;
-requires    'Module::ScanDeps'  => 1.01;
+requires    'Module::ScanDeps'  => 1.05;
 requires    'PAR::Dist'         => 0.22;
-requires    'PAR'               => '1.000';
+requires    'PAR'               => '1.004';
 requires    'Getopt::ArgvFile'  => 1.07;
 
 if ($^O eq 'MSWin32') {
@@ -47,17 +47,24 @@ repository 'http://svn.openfoundry.org/par/PAR-Packer/trunk';
 
 par_base 'SMUELLER';
 
+if ($] == 5.010000) {
+    # 5.10.0 breaks how PAR intercepts loading of shared libraries
+    warn <<'...';
+*** Perl version 5.10.0 is not supported.
+    Please upgrade to 5.10.1 or better.
+...
+    exit 0;
+}
 
 if (defined($ENV{PERL5LIB}) || defined($ENV{PERLLIB})) {
-    warn <<'WARNING';
+    warn <<'...';
 *** You have extra Perl library paths set in your environment.
     Please note that these paths (set with PERL5LIB or PERLLIB)
     are not honored by perl when running under taint mode, which
     may lead to problems. This is a limitation (by design) of
     Perl, not of PAR::Packer; but some of the problems may
     manifest here during installation.
-
-WARNING
+...
 }
 
 par_prehook();

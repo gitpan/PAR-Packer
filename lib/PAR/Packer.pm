@@ -1,9 +1,9 @@
 package PAR::Packer;
-use 5.006;
+use 5.008001;
 use strict;
 use warnings;
 
-our $VERSION = '1.010';
+our $VERSION = '1.011';
 
 =head1 NAME
 
@@ -27,7 +27,6 @@ have a C compiler.
 use Config;
 use Archive::Zip ();
 use Cwd ();
-use ExtUtils::MakeMaker ();
 use File::Basename ();
 use File::Find ();
 use File::Spec ();

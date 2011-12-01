@@ -27,12 +27,6 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/PAR.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-inc/parent.pm
-inc/PerlIO.pm
-inc/Test/Builder.pm
-inc/Test/Builder/IO/Scalar.pm
-inc/Test/Builder/Module.pm
-inc/Test/More.pm
 lib/App/Packer/PAR.pm
 lib/PAR/Filter.pm
 lib/PAR/Filter/Bleach.pm
@@ -47,11 +41,8 @@ Makefile.PL
 MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml
-myldr/boot
 myldr/boot.c
-myldr/boot.o
 myldr/Dynamic.in
-myldr/Dynamic.pm
 myldr/encode_append.pl
 myldr/env.c
 myldr/file2c.pl
@@ -60,22 +51,14 @@ myldr/main.c
 myldr/Makefile.PL
 myldr/mktmpdir.c
 myldr/mktmpdir.h
-myldr/MYMETA.yml
-myldr/parl
-myldr/parldyn
-myldr/pm_to_blib
 myldr/run_with_inc.pl
 myldr/sha1.c.PL
 myldr/Static.in
-myldr/Static.pm
 myldr/usernamefrompwuid.c
 myldr/utils.c
 myldr/win32.coff
 myldr/win32.obj
 myldr/win32.res
-MYMETA.yml
-package/parl.nsi
-parpackerresource.zip
 README
 script/par.pl
 script/parl.pod

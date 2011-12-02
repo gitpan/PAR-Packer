@@ -29,10 +29,10 @@ requires:
   Getopt::ArgvFile: 1.07
   IO::Compress::Gzip: 0
   Module::ScanDeps: 1.05
-  PAR: 1.004
+  PAR: 1.005
   PAR::Dist: 0.22
   perl: 5.8.1
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://svn.openfoundry.org/par/PAR-Packer/trunk
-version: 1.011
+version: 1.012

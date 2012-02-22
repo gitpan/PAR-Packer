@@ -29,6 +29,7 @@ static int isWritableDir(const char* val)
            access(val, W_OK) == 0;
 }
 
+#ifndef WIN32
 /* check that:
  * - val is a directory (and not a symlink)
  * - val is owned by the user
@@ -45,6 +46,7 @@ static int isSafeDir(const char* val)
            PL_statbuf.st_uid == getuid() &&
            (PL_statbuf.st_mode & 0777) == 0700;
 }
+#endif
 
 void par_setup_libpath( const char * stmpdir )
 {
@@ -76,7 +78,6 @@ void par_setup_libpath( const char * stmpdir )
 
 char *par_mktmpdir ( char **argv ) {
     int i;
-    char *c;
     const char *tmpdir = NULL;
     const char *key = NULL , *val = NULL;
 
@@ -112,6 +113,7 @@ char *par_mktmpdir ( char **argv ) {
         DWORD buflen = MAXPATHLEN;
         username = malloc(MAXPATHLEN);
         GetUserName((LPTSTR)username, &buflen);
+        // FIXME this is uncondifionally overwritten below - WTF?
     }
 #endif
 
@@ -123,17 +125,16 @@ char *par_mktmpdir ( char **argv ) {
                 username = strdup(val);
         }
     }
-
-    if ( username == NULL ) {
+    if ( username == NULL )
         username = "SYSTEM";
-    }
-    else {
-        /* replace all non-alphanumeric letters with '_' */
-        for ( c = username ; *c != '\0' ; c++ ) {
-            if ( !isalnum(*c) ) {
-                *c = '_';
-            }
-        }
+   
+    /* sanitize username: encode all bytes as 2 hex digits */
+    {
+        char *hexname = malloc(2 * strlen(username) + 1);
+        char *u, *h;
+        for ( u = username, h = hexname ; *u != '\0' ; u++, h += 2)
+            sprintf(h, "%02x", *(unsigned char*)u);
+        username = hexname;
     }
 
     /* Try temp environment variables */

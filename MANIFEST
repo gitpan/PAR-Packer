@@ -56,9 +56,10 @@ myldr/sha1.c.PL
 myldr/Static.in
 myldr/usernamefrompwuid.c
 myldr/utils.c
-myldr/win32.coff
-myldr/win32.obj
-myldr/win32.res
+myldr/winres/pp.ico
+myldr/winres/pp.manifest
+myldr/winres/pp.rc
+package/parl.nsi
 README
 script/par.pl
 script/parl.pod

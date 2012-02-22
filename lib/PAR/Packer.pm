@@ -3,7 +3,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-our $VERSION = '1.012';
+our $VERSION = '1.013';
 
 =head1 NAME
 
@@ -1257,6 +1257,12 @@ sub _par_to_exe {
         $self->_fix_console() if $opt->{g};
     }
     elsif (eval { require Win32::Exe; 1 }) {
+        # FIXME --info results in a corrupted executable
+        if ($opt->{N}) {
+            $self->_warn("--info is currently broken, disabling it");
+            delete $opt->{N};
+        }
+
         $self->_move_parl();
         my $exe = Win32::Exe->new($self->{parl});
         $exe = $exe->create_resource_section if !$exe->has_resource_section;
@@ -1308,34 +1314,6 @@ sub _extract_parl {
     return $filename;
 }
 
-
-sub _fix_console {
-    my ($self) = @_;
-
-    my $opt      = $self->{options};
-    my $output   = $self->{output};
-    my $dynperl  = $self->{dynperl};
-
-    return unless $opt->{g};
-
-    $self->_vprint(1, "Fixing $output to remove its console window");
-    $self->_strip_console($output);
-
-    if ($dynperl and !$opt->{d}) {
-        # we have a static.exe that needs taking care of.
-        my $buf;
-        my $fh = $self->_open($self->{orig_parl} || $self->{parl});
-        seek $fh, -8, 2;
-        read $fh, $buf, 8;
-        die unless $buf eq "\nPAR.pm\n";
-        seek $fh, -12, 2;
-        read $fh, $buf, 4;
-        seek $fh, -12 - unpack("N", $buf) - 4, 2;
-        read $fh, $buf, 4;
-        close $fh;
-        $self->_strip_console($output, unpack("N", $buf));
-    }
-}
 
 sub _move_parl {
     my ($self) = @_;
@@ -1408,26 +1386,32 @@ sub _generate_output {
     system($parl, @args);
 }
 
-sub _strip_console {
-    my $self   = shift;
-    my $file   = shift;
-    my $preoff = shift || 0;
+sub _fix_console {
+    my ($self) = @_;
+
+    my $opt      = $self->{options};
+    my $output   = $self->{output};
+    my $dynperl  = $self->{dynperl};
+
+    return unless $opt->{g};
+
+    $self->_vprint(1, "Fixing $output to remove its console window");
 
     my ($record, $magic, $signature, $offset, $size);
 
-    my $exe = $self->_open('+<', $file);
+    my $exe = $self->_open('+<', $output);
     binmode $exe;
-    seek $exe, $preoff, 0;
+    seek $exe, 0, 0;
 
     # read IMAGE_DOS_HEADER structure
     read $exe, $record, 64;
     ($magic, $offset) = unpack "Sx58L", $record;
 
-    die "$file is not an MSDOS executable file.\n"
+    die "$output is not an MSDOS executable file.\n"
       unless $magic == 0x5a4d;    # "MZ"
 
     # read signature, IMAGE_FILE_HEADER and first WORD of IMAGE_OPTIONAL_HEADER
-    seek $exe, $preoff + $offset, 0;
+    seek $exe, $offset, 0;
     read $exe, $record, 4 + 20 + 2;
 
     ($signature, $size, $magic) = unpack "Lx16Sx2S", $record;
@@ -1440,7 +1424,7 @@ sub _strip_console {
       ($size == 240 && $magic == 0x20b);    # IMAGE_NT_OPTIONAL_HDR64_MAGIC
 
     # Offset 68 in the IMAGE_OPTIONAL_HEADER(32|64) is the 16 bit subsystem code
-    seek $exe, $preoff + $offset + 4 + 20 + 68, 0;
+    seek $exe, $offset + 4 + 20 + 68, 0;
     print $exe pack "S", 2;                 # IMAGE_WINDOWS
     close $exe;
 }

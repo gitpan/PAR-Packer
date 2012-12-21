@@ -61,8 +61,9 @@ my $exe = $Config{_exe};
 my $link_exe = (($^O eq 'os2' and $Config{ldflags} =~ /-Zexe/) ? '' : $exe);
 my $o = $Config{obj_ext};
 my $gccversion = $Config{gccversion};
-my $pccflags = ccopts();
-my $pldflags = ldopts();
+# NOTE: on some platforms, ccopts or ldopts may contain newlines
+chomp( my $pccflags = ccopts() );
+chomp( my $pldflags = ldopts() );
 my $dynperl = $Config{useshrplib} && ($Config{useshrplib} ne 'false');
 
 $dynperl = 1 if $pldflags =~ /\B-lperl\b/; # Gentoo lies to us!
@@ -81,13 +82,14 @@ my $parl_exe = "parl$exe";
 my $parldyn_exe = "parldyn$exe";
 
 
-my( $out, $ccdebug, $lddebug, $warn, $rm, $mv, $res, $mt_cmd, $res_cmd, $res_section, $rt_cmd, $pre_res );
+my( $out, $ccdebug, $lddebug, $warn, $rm, $mv, $mt_cmd );
 
-$res = '';
-$pre_res = '';
-$res_cmd = '-$(NOOP)';
-$rt_cmd = '-$(NOOP)';
-$res_section = 'noresource.o'; # is never built
+my $res = '';
+my $pre_res = '';
+my $res_cmd = '-$(NOOP)';
+my $rt_cmd = '-$(NOOP)';
+my $res_section = 'noresource.o'; # is never built
+my $boot_ldflags = '';
 
 if( $cc =~ m/^cl\b/i ) {
     $out = '-out:';
@@ -99,7 +101,7 @@ if( $cc =~ m/^cl\b/i ) {
    $rt_cmd = qq(rc winres\\pp.rc);
     $res_cmd = qq(cvtres /NOLOGO /MACHINE:$machinearch /OUT:ppresource.obj $pre_res);
     $res = 'ppresource.obj';
-   $res_section = $res;
+    $res_section = $res;
     # Embed the manifest file for VC 2005 (aka VC8) or higher, but not for the
     # 64-bit Platform SDK compiler.
     if( $Config{ptrsize} == 4 and $Config{ccversion} =~ /^(\d+)/ and $1 >= 14 ) {
@@ -112,14 +114,16 @@ if( $cc =~ m/^cl\b/i ) {
     $ccdebug = $debug ? '-g ' : '';
     $lddebug = ($debug or $^O eq 'darwin') ? '' : '-s ';
     $warn = $debug ? '-Wall -Wno-comments ' : '';
-    if( $^O =~ /^(?:MSWin|cygwin)/ ){
-   $res = 'ppresource.coff';
-   $pre_res = qq(winres\\pp.res);
-   $rt_cmd = qq(windres -F pei-i386 -i winres\\pp.rc -o $pre_res);
-   $res_cmd = qq(windres -o ppresource.coff $pre_res);
-   $res_section = $res;
+    if ( $^O =~ /^(?:MSWin|cygwin)/ ) {
+        my $target = $Config{archname} =~ /x64/ ? 'pe-x86-64' : 'pe-i386';
+        $res = 'ppresource.coff';
+        $pre_res = qq(winres\\pp.rc);
+        $rt_cmd = '-$(NOOP)';
+        $res_cmd = qq(windres -i winres\\pp.rc -o ppresource.coff --input-format=rc --output-format=coff --target=$target);
+        $res_section = $res;
     }
     $mt_cmd = '-$(NOOP)';
+    $boot_ldflags = '-static-libgcc ';
 } else {
     $out = '-o ';
     $ccdebug = '';
@@ -131,7 +135,6 @@ if( $cc =~ m/^cl\b/i ) {
 
 my $perl58lib = "";
 if($ENV{ACTIVEPERL_MINGW} and $Config{cf_email}=~/ActiveState.com/i){
-    chomp $pldflags;
     $perl58lib = "-l$Config{libperl}";
     $perl58lib =~ s/\.lib$//;
 }
@@ -141,6 +144,7 @@ my $ldflags = "$lddebug$pldflags $perl58lib";
 my $static_ldflags = $ldflags;
 
 $static_ldflags =~ s/\s+-lperl\s+/ /g;
+$boot_ldflags .= $static_ldflags;
 
 my $libperl;
 
@@ -206,31 +210,40 @@ my $par = (($dynperl && $^O ne 'os2') ? $boot_exe : $par_exe);
 
 
 # If on Windows and Perl was built with GCC 4.x, then libperl*.dll
-# may depend on some libgcc*.dll (Strawberry Perl 5.12 is an example).
-# This libgcc*.dll has to be included into with any packed executbale 
+# may depend on some libgcc_*.dll (e.g. Strawberry Perl 5.12).
+# This libgcc_*.dll has to be included into with any packed executable 
 # in the same way as libperl*.dll itself, otherwise a packed executable
-# won't run when libgcc*.dll isn't installed.
-my $libgcc;
-if ($dynperl and $^O eq 'MSWin32'
-    and defined $Config{gccversion}     # gcc version 4.x or above was used
-    and $Config{gccversion} =~ m{\A(\d+)}ms && $1 >= 4) {
-    # look for a libgcc_*.dll 
+# won't run when libgcc_*.dll isn't installed.
+# The same holds for libstdc++*.dll (e.g. Strawberry Perl 5.16).
+
+sub find_dll
+{
+    my ($dll_glob) = @_;
+
+    # look for $dll_glob
     # - in the same directory as the perl executable itself
     # - in the same directory as gcc (only useful if it's an absolute path)
     # - in PATH
-    ($libgcc) = map { glob(File::Spec->catfile($_, "libgcc_*.$Config{so}")) }
-                    File::Basename::dirname($^X),
-                    File::Basename::dirname($cc),
-                    File::Spec->path;
-}
-$libgcc ||= "";
-
-my $my_stuff = "my_par.c my_libperl.c";
-if ($libgcc) {
-    $cflags .= " -DLOAD_MY_LIBGCC";
-    $my_stuff .= " my_libgcc.c";
+    my ($dll_path) = map { glob(File::Spec->catfile($_, $dll_glob)) }
+                         File::Basename::dirname($^X),
+                         File::Basename::dirname($cc),
+                         File::Spec->path;
+    return $dll_path;
 }
 
+
+my ($libgcc, $libstdcpp);
+if ($dynperl and $^O eq 'MSWin32'
+    and defined $Config{gccversion}     # gcc version 4.x or above was used
+    and $Config{gccversion} =~ m{\A(\d+)}ms && $1 >= 4) {
+    $libgcc = find_dll("libgcc_*.$Config{so}");
+    $libstdcpp = find_dll("libstdc++*.$Config{so}");
+}
+
+my @embedded_files = ($par_exe);       # must come first
+push @embedded_files, $libperl;
+push @embedded_files, $libgcc if defined $libgcc;
+push @embedded_files, $libstdcpp if defined $libstdcpp;
 
 my @strippedparl = qw( Static.pm );
 push @strippedparl, qw( Dynamic.pm ) if $dynperl;
@@ -259,7 +272,7 @@ WriteMakefile(
     PL_FILES    => {},
     PM          => { map { $_ => File::Spec->catfile('$(INST_LIBDIR)', qw( PAR StrippedPARL ), $_) }
                      @strippedparl },
-    MAN3PODS    => {},
+    MAN1PODS    => {},
     EXE_FILES   => \@parl_exes,
     macro       => { FIXIN => '$(NOOP)' },
 );
@@ -293,8 +306,8 @@ $res_section:
 	$res_cmd
 
 clean::
-	-\$(RM_F) my_*.c
-	-\$(RM_F) main$o boot$o $res $pre_res
+	-\$(RM_F) boot_embedded_files.c my_par_pl.c
+	-\$(RM_F) main$o boot$o $res
 	-\$(RM_F) sha1.c
 	-\$(RM_F) *.opt *.pdb perlxsi.c
 	-\$(RM_F) usernamefrompwuid.h
@@ -305,7 +318,7 @@ $par_exe: \$(OBJECTS)
 	$mt_cmd
 
 my_par_pl.c: $par_pl
-	\$(PERLRUN) $f2c -s $par_pl \$@ load_my_par_pl
+	\$(PERLRUN) par_pl2c.pl my_par_pl < $par_pl > \$@ 
 
 $parl_exe: $par
 	\$(PERLRUN) -Mblib run_with_inc.pl $par -q -B -O\$@
@@ -332,20 +345,14 @@ pure_all:: $parldyn_exe Dynamic.pm
 $parldyn_exe: $par_exe
 	\$(PERLRUN) -Mblib run_with_inc.pl $par_exe -q -B -O\$@
 
-boot$o: \$(MKTMP_STUFF) $my_stuff
+boot$o: \$(MKTMP_STUFF) boot_embedded_files.c
 
 $boot_exe: boot$o
-	\$(LD) boot$o \$(STATIC_LDFLAGS) $res $out$boot_exe_link
+	\$(LD) boot$o $boot_ldflags $res $out$boot_exe_link
 	$mt_cmd
 
-my_par.c: $par_exe
-	\$(PERLRUN) $f2c -c $chunk_size $par_exe \$@ load_my_par
-
-my_libperl.c:
-	\$(PERLRUN) $f2c -c $chunk_size -n $extract_libperl_as $libperl \$@ load_my_libperl
-
-my_libgcc.c:
-	\$(PERLRUN) $f2c -c $chunk_size $libgcc \$@ load_my_libgcc
+boot_embedded_files.c: $par_exe
+	\$(PERLRUN) $f2c -c $chunk_size @embedded_files > \$@
 
 Dynamic.pm: Dynamic.in $par_exe
 	\$(PERLRUN) encode_append.pl Dynamic.in $par_exe Dynamic.pm

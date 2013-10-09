@@ -6,7 +6,7 @@
 
 use strict;
 use Config;
-use File::Spec;
+use File::Spec::Functions ':ALL';
 use ExtUtils::Embed;
 use ExtUtils::MakeMaker;
 use DynaLoader;
@@ -19,9 +19,9 @@ sub find_file {
     my $file = shift;
 
     my @paths = (
-	    $Config{bin},
-    	File::Spec->catdir($Config{'archlibexp'}, 'CORE'),
-	    split(/\Q$Config{path_sep}\E/, $ENV{$Config{ldlibpthname}} || ''),
+	$Config{bin},
+    	catdir($Config{'archlibexp'}, 'CORE'),
+	split(/\Q$Config{path_sep}\E/, $ENV{$Config{ldlibpthname}} || ''),
     	split(/ /, $Config{libpth}),
     );
 
@@ -29,12 +29,8 @@ sub find_file {
     if ($libperl = DynaLoader::dl_findfile("-lperl")) {
         if (-l $libperl) {
             my $realpath = readlink($libperl);
-            if (!File::Spec->file_name_is_absolute($realpath)) {
-                $realpath = File::Spec->rel2abs(
-                    File::Spec->catfile(
-                        dirname($libperl) => $realpath
-                    )
-                );
+            if (!file_name_is_absolute($realpath)) {
+                $realpath = rel2abs(catfile(dirname($libperl), $realpath));
             }
             $libperl = $realpath;
         }
@@ -42,15 +38,15 @@ sub find_file {
     }
 
     foreach my $path (@paths) {
-	    $libperl = File::Spec->catfile($path, $file);
+	    $libperl = catfile($path, $file);
     	return $libperl if -e $libperl;
         
     	# for MinGW
-	    $libperl = File::Spec->catfile($path, $1) if $file =~ /^lib(.+)/;
+	    $libperl = catfile($path, $1) if $file =~ /^lib(.+)/;
     	return $libperl if -e $libperl;
         
        	# for Cygwin
-    	$libperl = File::Spec->catfile($path, $file.$Config{_a});
+    	$libperl = catfile($path, $file.$Config{_a});
     	return $libperl if -e $libperl;
     }
 }
@@ -72,12 +68,12 @@ my $cc = $Config{cc};
 my $ld = $Config{ld} || (($^O eq 'MSWin32') ? 'link.exe' : $Config{cc});
 $ld = $Config{cc} if ($^O =~ /^(?:dec_osf|aix|hpux)$/);
 
-my $f2c = File::Spec->catfile('.', "file2c.pl");
-my $par_pl = File::Spec->catfile('..', 'script', "par.pl");
-my $par_exe = File::Spec->catfile('.', "par$exe");
-my $par_exe_link = File::Spec->catfile('.', "par$link_exe");
-my $boot_exe = File::Spec->catfile('.', "boot$exe");
-my $boot_exe_link = File::Spec->catfile('.', "boot$link_exe");
+my $f2c = catfile('.', "file2c.pl");
+my $par_pl = catfile('..', 'script', "par.pl");
+my $par_exe = catfile('.', "par$exe");
+my $par_exe_link = catfile('.', "par$link_exe");
+my $boot_exe = catfile('.', "boot$exe");
+my $boot_exe_link = catfile('.', "boot$link_exe");
 my $parl_exe = "parl$exe";
 my $parldyn_exe = "parldyn$exe";
 
@@ -85,10 +81,7 @@ my $parldyn_exe = "parldyn$exe";
 my( $out, $ccdebug, $lddebug, $warn, $rm, $mv, $mt_cmd );
 
 my $res = '';
-my $pre_res = '';
-my $res_cmd = '-$(NOOP)';
-my $rt_cmd = '-$(NOOP)';
-my $res_section = 'noresource.o'; # is never built
+my $res_section = '';
 my $boot_ldflags = '';
 
 if( $cc =~ m/^cl\b/i ) {
@@ -97,11 +90,13 @@ if( $cc =~ m/^cl\b/i ) {
     $lddebug = $debug ? '-debug ' : '-release ';
     $warn = $debug ? '-W3' : '';
     my $machinearch = ( $Config{ptrsize} == 8 ) ? 'AMD64' : 'X86';
-   $pre_res = qq(winres\\pp.res);
-   $rt_cmd = qq(rc winres\\pp.rc);
-    $res_cmd = qq(cvtres /NOLOGO /MACHINE:$machinearch /OUT:ppresource.obj $pre_res);
     $res = 'ppresource.obj';
-    $res_section = $res;
+    $res_section = <<"...";
+$res:
+	rc winres\\pp.rc
+	cvtres /NOLOGO /MACHINE:$machinearch /OUT:$res winres\\pp.res
+...
+
     # Embed the manifest file for VC 2005 (aka VC8) or higher, but not for the
     # 64-bit Platform SDK compiler.
     if( $Config{ptrsize} == 4 and $Config{ccversion} =~ /^(\d+)/ and $1 >= 14 ) {
@@ -117,10 +112,13 @@ if( $cc =~ m/^cl\b/i ) {
     if ( $^O =~ /^(?:MSWin|cygwin)/ ) {
         my $target = $Config{archname} =~ /x64/ ? 'pe-x86-64' : 'pe-i386';
         $res = 'ppresource.coff';
-        $pre_res = qq(winres\\pp.rc);
-        $rt_cmd = '-$(NOOP)';
-        $res_cmd = qq(windres -i winres\\pp.rc -o ppresource.coff --input-format=rc --output-format=coff --target=$target);
-        $res_section = $res;
+        # Note: On cygwin the command below will be processed by the
+        # cygwin shell, so backslashes in pathnames might be a problem.
+        # Instead use forward slashes which work on Windows as well.
+        $res_section = <<"...";
+$res:
+	windres -i winres/pp.rc -o $res --input-format=rc --output-format=coff --target=$target
+...
     }
     $mt_cmd = '-$(NOOP)';
     $boot_ldflags = '-static-libgcc ';
@@ -224,10 +222,10 @@ sub find_dll
     # - in the same directory as the perl executable itself
     # - in the same directory as gcc (only useful if it's an absolute path)
     # - in PATH
-    my ($dll_path) = map { glob(File::Spec->catfile($_, $dll_glob)) }
-                         File::Basename::dirname($^X),
-                         File::Basename::dirname($cc),
-                         File::Spec->path;
+    my ($dll_path) = map { glob(catfile($_, $dll_glob)) }
+                         dirname($^X),
+                         dirname($cc),
+                         path();
     return $dll_path;
 }
 
@@ -270,7 +268,7 @@ WriteMakefile(
     SKIP        => [qw(static static_lib dynamic dynamic_lib test)],
     NO_META     => 1,
     PL_FILES    => {},
-    PM          => { map { $_ => File::Spec->catfile('$(INST_LIBDIR)', qw( PAR StrippedPARL ), $_) }
+    PM          => { map { $_ => catfile('$(INST_LIBDIR)', qw( PAR StrippedPARL ), $_) }
                      @strippedparl },
     MAN1PODS    => {},
     EXE_FILES   => \@parl_exes,
@@ -301,9 +299,7 @@ main$o: main.c my_par_pl.c perlxsi.c internals.c \$(MKTMP_STUFF)
 sha1.c:
 	\$(PERLRUN) sha1.c.PL
 
-$res_section:
-	$rt_cmd
-	$res_cmd
+$res_section
 
 clean::
 	-\$(RM_F) boot_embedded_files.c my_par_pl.c
@@ -321,7 +317,7 @@ my_par_pl.c: $par_pl
 	\$(PERLRUN) par_pl2c.pl my_par_pl < $par_pl > \$@ 
 
 $parl_exe: $par
-	\$(PERLRUN) -Mblib run_with_inc.pl $par -q -B -O\$@
+	\$(PERLRUN) -Mblib=.. run_with_inc.pl $par -q -B -O\$@
 
 Static.pm: Static.in $par
 	\$(PERLRUN) encode_append.pl Static.in $par Static.pm
@@ -343,7 +339,7 @@ EOT
 pure_all:: $parldyn_exe Dynamic.pm
 
 $parldyn_exe: $par_exe
-	\$(PERLRUN) -Mblib run_with_inc.pl $par_exe -q -B -O\$@
+	\$(PERLRUN) -Mblib=.. run_with_inc.pl $par_exe -q -B -O\$@
 
 boot$o: \$(MKTMP_STUFF) boot_embedded_files.c
 

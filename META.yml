@@ -65,4 +65,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://svn.openfoundry.org/par/PAR-Packer/trunk
-version: 1.015
+version: 1.016

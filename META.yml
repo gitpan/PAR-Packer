@@ -9,7 +9,7 @@ configure_requires:
   ExtUtils::MakeMaker: 6.59
 distribution_type: module
 dynamic_config: 1
-generated_by: 'Module::Install version 1.06'
+generated_by: 'Module::Install version 1.08'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -23,10 +23,10 @@ no_index:
 provides:
   App::Packer::PAR:
     file: lib/App/Packer/PAR.pm
-    version: 0.91
+    version: '0.91'
   PAR::Filter:
     file: lib/PAR/Filter.pm
-    version: 0.03
+    version: '0.03'
   PAR::Filter::Bleach:
     file: lib/PAR/Filter/Bleach.pm
   PAR::Filter::Bytecode:
@@ -39,13 +39,13 @@ provides:
     file: lib/PAR/Filter/PodStrip.pm
   PAR::Packer:
     file: lib/PAR/Packer.pm
-    version: 1.017
+    version: '1.018'
   PAR::StrippedPARL::Base:
     file: lib/PAR/StrippedPARL/Base.pm
-    version: 0.975
+    version: '0.975'
   pp:
     file: lib/pp.pm
-    version: 0.992
+    version: '0.992'
 recommends:
   Digest: Module::Signature
   Tk: 0
@@ -59,10 +59,10 @@ requires:
   Getopt::ArgvFile: 1.07
   IO::Compress::Gzip: 0
   Module::ScanDeps: 1.09
-  PAR: 1.005
+  PAR: '1.005'
   PAR::Dist: 0.22
   perl: 5.8.1
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://svn.openfoundry.org/par/PAR-Packer/trunk
-version: 1.017
+version: '1.018'

@@ -3,7 +3,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-our $VERSION = '1.019';
+our $VERSION = '1.020';
 
 =head1 NAME
 
@@ -46,6 +46,7 @@ use constant OPTIONS => {
     'e|eval:s'       => 'Packing one-liner',
     'E|evalfeature:s'=> 'Packing one-liner with new syntactic features',
     'x|execute'      => 'Execute code to get dependencies',
+    'xargs:s'        => 'Args to pass when executing code',
     'X|exclude:s@'   => 'Exclude modules',
     'f|filter:s@'    => 'Input filters for scripts',
     'g|gui'          => 'No console window',
@@ -355,7 +356,7 @@ sub _create_valid_hash {
     return () if (%$hashout);
 
     foreach my $key (keys(%$hashin)) {
-        my (@keys) = ($key =~ /\|/) ? ($key =~ /(?<!:)(\w+)/g) : ($key);
+        my (@keys) = $key =~ /(?<!:)(\w+)/g;
         @{$hashout}{@keys} = ($hashin->{$key}) x @keys;
     }
 }
@@ -732,6 +733,11 @@ sub pack_manifest_hash {
     # Search for scannable code in all -I'd paths
     push @Module::ScanDeps::IncludeLibs, @{$opt->{I}} if $opt->{I};
     
+    if ($opt->{x} && defined $opt->{xargs}) {
+        require Text::ParseWords;
+        $opt->{x} = [ Text::ParseWords::shellwords($opt->{xargs}) ];
+    }
+
     my $scan_dispatch =
       $opt->{n}
       ? $self->_obj_function($fe, 'scan_deps_runtime')
@@ -754,7 +760,7 @@ sub pack_manifest_hash {
     %skip = map { $_, 1 } map &$inc_find($_), @exclude;
     %skip = (%skip, map { $_, 1 } @SharedLibs);
 
-    &$add_deps(
+    $add_deps->(
         rv      => \%map,
         modules => \@modules,
         skip    => \%skip,
@@ -772,7 +778,7 @@ sub pack_manifest_hash {
     my $size = 0;
     my $old_member;
 
-    if ($opt->{'m'} and -e $par_file) {
+    if ($opt->{m} and -e $par_file) {
         my $tmpzip = Archive::Zip->new();
         $tmpzip->read($par_file);
 

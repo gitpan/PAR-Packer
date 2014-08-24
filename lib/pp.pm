@@ -21,13 +21,16 @@ use Getopt::Long qw(:config no_ignore_case);
 sub go {
     my $class = shift;
 
-    unshift(@ARGV, split / +/, $ENV{PP_OPTS}) if $ENV{PP_OPTS};
+    if ($ENV{PP_OPTS}) {
+        require Text::ParseWords;
+        unshift @ARGV, Text::ParseWords::shellwords($ENV{PP_OPTS});
+    }
     
     my %opt;
     GetOptions( \%opt, PAR::Packer->options, 'h|help', 'V|version' );
     help() if $opt{h};
     version() if $opt{V};
-    
+
     local $Module::ScanDeps::ScanFileRE = qr/./;
 
     App::Packer::PAR->new(
@@ -246,6 +249,12 @@ Behaves just like C<-e>, except that it implicitly enables all optional features
 =item B<-x>, B<--execute>
 
 Run C<perl inputfile> to determine additonal run-time dependencies.
+
+=item B<--xargs>=I<STRING>
+
+If B<-x> is given, splits the C<STRING> using the function 
+C<shellwords> from L<Text::ParseWords> and passes the result 
+as C<@ARGV> when running C<perl inputfile>.
 
 =item B<-X>, B<--exclude>=I<MODULE>
 

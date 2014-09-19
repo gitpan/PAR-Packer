@@ -4,7 +4,6 @@ author:
   - 'Audrey Tang <cpan@audreyt.org>'
 build_requires:
   ExtUtils::MakeMaker: 6.59
-  String::ShellQuote: 0
 configure_requires:
   ExtUtils::Embed: 0
   ExtUtils::MakeMaker: 6.59
@@ -40,7 +39,7 @@ provides:
     file: lib/PAR/Filter/PodStrip.pm
   PAR::Packer:
     file: lib/PAR/Packer.pm
-    version: '1.021'
+    version: '1.022'
   PAR::StrippedPARL::Base:
     file: lib/PAR/StrippedPARL/Base.pm
     version: '0.975'
@@ -48,7 +47,9 @@ provides:
     file: lib/pp.pm
     version: '0.992'
 recommends:
-  Digest: Module::Signature
+  Digest: 0
+  Digest::SHA: 0
+  Module::Signature: 0
   Tk: 0
   Tk::ColoredButton: 0
   Tk::EntryCheck: 0
@@ -67,4 +68,4 @@ requires:
 resources:
   license: http://dev.perl.org/licenses/
   repository: http://svn.openfoundry.org/par/PAR-Packer/trunk
-version: '1.021'
+version: '1.022'

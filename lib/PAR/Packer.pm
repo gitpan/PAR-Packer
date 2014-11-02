@@ -3,7 +3,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-our $VERSION = '1.022';
+our $VERSION = '1.023';
 
 =head1 NAME
 
@@ -695,7 +695,7 @@ sub pack_manifest_hash {
     my %map;
 
     unshift(@INC, @{ $opt->{I} || [] });
-    unshift(@SharedLibs, map $self->_find_shlib($_, $sn), @{ $opt->{l} || [] });
+    unshift(@SharedLibs, map $self->_find_shlib($_), @{ $opt->{l} || [] });
 
     my $inc_find = $self->_obj_function($fe, '_find_in_inc');
 
@@ -1448,6 +1448,8 @@ sub _check_par {
 sub _chase_lib {
    my ($self, $file) = @_;
 
+   return $self->_chase_lib_darwin($file) if $^O eq q/darwin/;
+
    while ($Config::Config{d_symlink} and -l $file) {
        if ($file =~ /^(.*?\.\Q$Config{dlext}\E\.\d+)\..*/) {
            return $1 if -e $1;
@@ -1470,8 +1472,36 @@ sub _chase_lib {
    return $file;
 }
 
+sub _chase_lib_darwin {
+   my ($self, $file) = @_;
+
+   while (-l $file) {
+       if ($file =~ /^(.*?\.\d+)(\.\d+)*\.dylib$/) {
+           my $name = $1 . q/.dylib/;
+           return $name if -e $name;
+       }
+
+       return $file if $file =~ /\D\.\d+\.dylib$/;
+
+       my $dir = File::Basename::dirname($file);
+       $file = readlink($file);
+
+       unless (File::Spec->file_name_is_absolute($file)) {
+           $file = File::Spec->rel2abs($file, $dir);
+       }
+   }
+
+   if ($file =~ /^(.*?\.\d+)(\.\d+)*\.dylib$/) {
+       my $name = $1 . q/.dylib/;
+       return $name if -e $name;
+   }
+
+   return $file;
+}
+
+
 sub _find_shlib {
-    my ($self, $file, $script_name) = @_;
+    my ($self, $file) = @_;
 
     if ($^O eq 'MSWin32') {
         if ($file !~ /^[a-z]:/i) {
@@ -1492,25 +1522,41 @@ sub _find_shlib {
                            ? $ENV{ $Config{ldlibpthname} } : undef;
     }
     if (not defined $libpthname) {
-        print "Can't find $file. Environment variable "
-          . ($^O eq 'MSWin32' ? 'PATH' : $Config{ldlibpthname})
-          . " does not exist.\n";
+        $self->_die(sprintf(
+                "Don't know how to find shared library (option -l) %s: ".
+                "environment variable %s is not set.",
+                $file, $^O eq 'MSWin32' ? 'PATH' : $Config{ldlibpthname}));
         return;
     }
 
     $file = File::Basename::basename($file);
-    for my $dir (File::Basename::dirname($0),
-        split(/\Q$Config{path_sep}\E/, $libpthname))
-    {
-        my $abs = File::Spec->catfile($dir, $file);
-        return $self->_chase_lib($abs) if -e $abs;
-        $abs = File::Spec->catfile($dir, "$file.$Config{dlext}");
-        return $self->_chase_lib($abs) if -e $abs;
-    }
+    my @path = (File::Basename::dirname($0), split(/\Q$Config{path_sep}\E/, $libpthname));
+
+    my $lib = $self->_find_shlib_in_path($file, @path);
+    return $lib if $lib;
+
+    $self->_die("Can't find shared library (option -l): $file")
+        if $^O eq 'MSWin32' || $file =~ /^lib/;
 
     # be extra magical and prepend "lib" to the filename
-    return if $^O eq 'MSWin32';
-    return $self->_find_shlib("lib$file", $script_name) unless $file =~ /^lib/;
+    $lib = $self->_find_shlib_in_path("lib$file", @path);
+    return $lib if $lib;
+
+    $self->_die("Can't find shared library (option -l): $file (also tried lib$file)");
+}
+
+sub _find_shlib_in_path
+{
+    my ($self, $file, @path) = @_;
+
+    my $dlext = $^O eq 'darwin' ? 'dylib' : $Config{dlext};
+    for my $dir (@path)
+    {
+        my $abs = File::Spec->catfile($dir, $file);
+        $abs = File::Spec->catfile($dir, "$file.$dlext") unless -e $abs;
+        return $self->_chase_lib($abs) if -e $abs;
+    }
+    return;
 }
 
 sub _can_run {
